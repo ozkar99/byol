@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
       number   : /-?[0-9]+(\\.[0-9]+)?/ ;                 \
       operator : '+' | '-' | '*' | '/' ;                  \
       expr     : <number> | '(' <operator> <expr>+ ')' ;  \
-      lispy    : /^/ <operator> <expr>+ /$/ ;             \
+      lispy    : /^/ '(' <operator> <expr>+ ')' /$/ ;     \
     ",
     number_parser, operator_parser, expresion_parser, lispy_parser);
 
