@@ -1,11 +1,14 @@
 CC=clang
 CFLAGS=-Wall
-DEPS=-ledit
+DEPS=-lreadline -lm
 
-FILES=main.c
+FILES=main.c mpc/mpc.c
 
 build:
-	$(CC) $(CFLAGS) $(DEPS) $(FILES) -o byol
+	$(CC) $(CFLAGS) $(DEPS) $(FILES) -o lispy
 
 debug:
 	$(CC) $(CFLAGS) $(DEPS) -g $(FILES)
+
+clean:
+	rm -r a.out* lispy*
