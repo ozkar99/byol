@@ -22,6 +22,7 @@ void add_history(char* unused) {}
 
 #include "mpc/mpc.h"
 #include "parse.c"
+#include "eval.c"
 
 int main(int argc, char** argv) {
 
@@ -48,8 +49,8 @@ int main(int argc, char** argv) {
       mpc_err_print(ast.r.error);
       mpc_err_delete(ast.r.error);
     } else {
-      // TODO: eval here
-      mpc_ast_print(ast.r.output);
+      double result = eval(ast.r.output);
+      printf("%f\n", result);
       mpc_ast_delete(ast.r.output);
     }
 

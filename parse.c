@@ -5,9 +5,9 @@
 char* GRAMMAR =  
   "                                                     \
     number   : /-?[0-9]+(\\.[0-9]+)?/ ;                 \
-    operator : '+' | '-' | '*' | '/' ;                  \
+    operator : '+' | '-' | '*' | '/' | '%' | '^' ;      \
     expr     : <number> | '(' <operator> <expr>+ ')' ;  \
-    lispy    : /^/ <expr>+ /$/ ;                        \
+    lispy    : /^/ <operator> <expr>+ /$/ ;             \
   ";
 
 typedef struct {
