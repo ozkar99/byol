@@ -49,8 +49,9 @@ int main(int argc, char** argv) {
       mpc_err_print(ast.r.error);
       mpc_err_delete(ast.r.error);
     } else {
-      double result = eval(ast.r.output);
-      printf("%f\n", result);
+      lval result = eval(ast.r.output);
+      lval_println(result);
+
       mpc_ast_delete(ast.r.output);
     }
 
