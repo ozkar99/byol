@@ -5,9 +5,10 @@
 char* GRAMMAR =  
   "                                                     \
     number   : /-?[0-9]+(\\.[0-9]+)?/ ;                 \
-    operator : '+' | '-' | '*' | '/' | '%' | '^' ;      \
-    expr     : <number> | '(' <operator> <expr>+ ')' ;  \
-    lispy    : /^/ <operator> <expr>+ /$/ ;             \
+    symbol   : '+' | '-' | '*' | '/' | '%' | '^' ;      \
+    sexpr    : '(' <expr>* ')' ;                        \
+    expr     : <number> | <symbol> | <sexpr> ;          \
+    lispy    : /^/ <expr>* /$/ ;                        \
   ";
 
 typedef struct {
@@ -34,13 +35,15 @@ mpc_parser_t* generate_parser() {
 
   /* Create Some Parsers */
   mpc_parser_t* number_parser   = mpc_new("number");
-  mpc_parser_t* operator_parser = mpc_new("operator");
+  mpc_parser_t* symbol_parser = mpc_new("symbol");
+  mpc_parser_t* sexpr_parser = mpc_new("sexpr");
   mpc_parser_t* expresion_parser = mpc_new("expr");
   mpc_parser_t* lispy_parser    = mpc_new("lispy");
   
   /* Define them with the "GRAMMAR" variable */
   mpca_lang(MPCA_LANG_DEFAULT, GRAMMAR,
-    number_parser, operator_parser, expresion_parser, lispy_parser);
+    number_parser, symbol_parser, sexpr_parser, expresion_parser,
+    lispy_parser);
 
   return lispy_parser;
 }
