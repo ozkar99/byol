@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
       mpc_err_print(ast.r.error);
       mpc_err_delete(ast.r.error);
     } else {
-      lval* result = lval_read(ast.r.output);
+      lval* result = lval_eval(lval_read(ast.r.output));
       lval_println(result);
       lval_del(result);
       mpc_ast_delete(ast.r.output);

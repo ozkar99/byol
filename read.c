@@ -38,31 +38,6 @@ lval* lval_sexpr(void) {
   return v;
 }
 
-// free memory from lval
-void lval_del(lval* v) {
-
-  switch (v->type) {
-    /* Do nothing special for number type */
-    case LVAL_NUM: break;
-
-    /* For Err or Sym free the string data */
-    case LVAL_ERR: free(v->err); break;
-    case LVAL_SYM: free(v->sym); break;
-
-    /* If Sexpr then delete all elements inside */
-    case LVAL_SEXPR:
-      for (int i = 0; i < v->count; i++) {
-        lval_del(v->cell[i]);
-      }
-      /* Also free the memory allocated to contain the pointers */
-      free(v->cell);
-    break;
-  }
-
-  /* Free the memory allocated for the "lval" struct itself */
-  free(v);
-}
-
 lval* lval_read_num(mpc_ast_t* t) {
   errno = 0;
   double x = strtof(t->contents, NULL);
