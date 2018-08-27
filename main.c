@@ -23,6 +23,7 @@ void add_history(char* unused) {}
 #include "mpc/mpc.h"
 #include "parse.c"
 #include "read.c"
+#include "eval.c"
 
 int main(int argc, char** argv) {
 
