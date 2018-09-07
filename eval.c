@@ -1,48 +1,36 @@
 #include "lval.c"
+#include "operations.c"
 
+lval* lval_eval_sexpr(lval* v);
 
-lval* builtin_op(lval* a, char* op) {
-
-  /* Ensure all arguments are numbers */
-  for (int i = 0; i < a->count; i++) {
-    if (a->cell[i]->type != LVAL_NUM) {
-      lval_del(a);
-      return lval_err("Cannot operate on non-number!");
-    }
-  }
-
-  /* Pop the first element */
-  lval* x = lval_pop(a, 0);
-
-  /* If no arguments and sub then perform unary negation */
-  if ((strcmp(op, "-") == 0) && a->count == 0) {
-    x->num = -x->num;
-  }
-
-  /* While there are still elements remaining */
-  while (a->count > 0) {
-
-    /* Pop the next element */
-    lval* y = lval_pop(a, 0);
-
-    if (strcmp(op, "+") == 0) { x->num += y->num; }
-    if (strcmp(op, "-") == 0) { x->num -= y->num; }
-    if (strcmp(op, "*") == 0) { x->num *= y->num; }
-    if (strcmp(op, "/") == 0) {
-      if (y->num == 0) {
-        lval_del(x); lval_del(y);
-        x = lval_err("Division By Zero!"); break;
-      }
-      x->num /= y->num;
-    }
-
-    lval_del(y);
-  }
-
-  lval_del(a); return x;
+lval* lval_eval(lval* v) {
+  /* Evaluate Sexpressions */
+  if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(v); }
+  /* All other lval types remain the same */
+  return v;
 }
 
-lval* lval_eval(lval* v);
+lval* builtin_eval(lval* a) {
+  LASSERT(a, a->count == 1,
+    "Function 'eval' passed too many arguments!");
+  LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
+    "Function 'eval' passed incorrect type!");
+
+  lval* x = lval_take(a, 0);
+  x->type = LVAL_SEXPR;
+  return lval_eval(x);
+}
+
+lval* builtin(lval* a, char* func) {
+  if (strcmp("list", func) == 0) { return builtin_list(a); }
+  if (strcmp("head", func) == 0) { return builtin_head(a); }
+  if (strcmp("tail", func) == 0) { return builtin_tail(a); }
+  if (strcmp("join", func) == 0) { return builtin_join(a); }
+  if (strcmp("eval", func) == 0) { return builtin_eval(a); }
+  if (strstr("+-/*%^", func)) { return builtin_op(a, func); }
+  lval_del(a);
+  return lval_err("Unknown Function!");
+}
 
 lval* lval_eval_sexpr(lval* v) {
 
@@ -70,14 +58,7 @@ lval* lval_eval_sexpr(lval* v) {
   }
 
   /* Call builtin with operator */
-  lval* result = builtin_op(v, f->sym);
+  lval* result = builtin(v, f->sym);
   lval_del(f);
   return result;
-}
-
-lval* lval_eval(lval* v) {
-  /* Evaluate Sexpressions */
-  if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(v); }
-  /* All other lval types remain the same */
-  return v;
 }

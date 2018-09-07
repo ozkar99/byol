@@ -3,6 +3,9 @@
 #ifndef _LVAL_INCL
 #define _LVAL_INCL
 
+#define LASSERT(args, cond, err) \
+  if (!(cond)) { lval_del(args); return lval_err(err); }
+
 // lisp-value struct
 typedef struct lval {
   int type;
@@ -16,7 +19,7 @@ typedef struct lval {
 } lval;
 
 /* Create Enumeration of Possible lval Types */
-enum { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR };
+enum { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 
 // Posible errors
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
@@ -31,8 +34,9 @@ void lval_del(lval* v) {
     case LVAL_ERR: free(v->err); break;
     case LVAL_SYM: free(v->sym); break;
 
-    /* If Sexpr then delete all elements inside */
+    /* If S-expr or Q-Expr then delete all elements inside */
     case LVAL_SEXPR:
+    case LVAL_QEXPR:
       for (int i = 0; i < v->count; i++) {
         lval_del(v->cell[i]);
       }
